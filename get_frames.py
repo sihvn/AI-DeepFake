@@ -12,6 +12,8 @@ def capture_frames(video_path, output_folder,video_name, num_frames=10):
     # print(total_frames)
     
     interval = math.floor(total_frames // num_frames)
+    if interval == 0:
+        interval = 1
     # print(interval)
     
     frame_count = 0
@@ -25,7 +27,7 @@ def capture_frames(video_path, output_folder,video_name, num_frames=10):
         success, frame = cap.read()
         
         # Check if its time to capture a frame
-        if frame_number % interval == 0 and success:
+        if frame_number != 0 and interval !=0 and frame_number % interval == 0 and success:
             frame_path = os.path.join(output_folder, f"{video_name}_{frame_count}.jpg")
             cv2.imwrite(frame_path, frame)
             print(f"Saved frame {frame_count}")
