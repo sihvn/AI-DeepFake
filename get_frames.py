@@ -32,7 +32,7 @@ def capture_frames(video_path, output_folder,video_name, num_frames=10):
             
             frame_count += 1
 
-        frame_number += 1
+        frame_number += interval
 
     cap.release()
     print("Frame capture completed.")
@@ -46,6 +46,7 @@ def capture_frames_from_folder(video_folder, output_folder, num_frames=10):
         if file_name.endswith(('.mp4')):
             video_path = os.path.join(video_folder, file_name)
             video_name = os.path.splitext(file_name)[0]
+            print(video_name)
             capture_frames(video_path, output_folder, video_name, num_frames)
 
 video_path = "D:/SUTD 8/50.021 Artificial Intelligence/proj/DeepfakeDetection1"
