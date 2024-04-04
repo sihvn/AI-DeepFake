@@ -2,7 +2,7 @@
 
 Use Python 3.10 (developed using 3.10.11).
 
-Set up Python virtual environment:
+Set up Python 3.10 virtual environment:
 
 > py -3.10 -m pip install virtualenv \
 > py -3.10 -m venv \<name-of-virtualenv>
