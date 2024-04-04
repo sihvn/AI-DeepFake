@@ -2,5 +2,8 @@
 dataset
 dataset-micro
 
-#virtual env
+# virtual env
 ai-deepfake
+
+# pycache
+__pycache__
