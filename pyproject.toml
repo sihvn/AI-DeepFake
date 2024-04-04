@@ -1,12 +1,18 @@
 [tool.poetry]
-name = "ai-deepfake"
-version = "0.1.0"
-description = ""
-authors = ["eharnlee <eharnlee@gmail.com>"]
+package-mode = false
 readme = "README.md"
+# name = "ai-deepfake"
+# version = "0.1.0"
+# description = ""
+# authors = ["eharnlee <eharnlee@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.10,<3.11"
+opencv-python = "^4.9.0.80"
+numpy = "^1.26.4"
+matplotlib = "^3.8.4"
+tensorflow-io-gcs-filesystem = "0.27"
+tensorflow = "2.10"
 
 
 [build-system]
