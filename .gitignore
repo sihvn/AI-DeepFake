@@ -7,3 +7,7 @@ ai-deepfake
 
 # pycache
 __pycache__
+
+#training and testing folders
+train
+test
