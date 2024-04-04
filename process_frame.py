@@ -1,10 +1,4 @@
-from collections import OrderedDict
-import json
 import os
-import cv2
-import sys
-import multiprocessing
-from tqdm import tqdm
 import face_recognition
 from PIL import Image
 
@@ -12,7 +6,6 @@ def extract_faces_from_frames(input_folder, output_folder):
     # Create the output folder if it doesn't exist
     os.makedirs(output_folder, exist_ok=True)
     
-    # Process each image in the input folder
     for filename in os.listdir(input_folder):
         if filename.endswith(('.jpg', '.jpeg', '.png')):
             image_path = os.path.join(input_folder, filename)
@@ -29,7 +22,6 @@ def extract_faces_from_frames(input_folder, output_folder):
                 face_image.save(face_path)
                 print(f"Saved face {i} from {filename}")
 
-# Example usage
 input_folder = "dataset/frames"
 output_folder = "train/fake"
 
