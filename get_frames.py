@@ -54,7 +54,7 @@ def capture_frames_from_folder(video_folder, output_folder, num_frames=10):
 
 # Example usage
 video_path = "dataset/train_micro"
-output_folder = "train/fake"
+output_folder = "dataset/frames"
 num_frames_to_capture = 10
 
 capture_frames_from_folder(video_path, output_folder, num_frames=num_frames_to_capture)
