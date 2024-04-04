@@ -1,6 +1,7 @@
 # AI-DeepFake
 
-Use Python 3.10 (developed using 3.10.11).
+Use Python 3.10 (developed using 3.10.11).\
+TensorFlow 2.1 used in this project requires CUDA 10.1.
 
 Set up Python 3.10 virtual environment:
 
