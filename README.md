@@ -1,9 +1,11 @@
 # AI-DeepFake
 
+Use Python 3.10 (developed using 3.10.11).
+
 Set up Python virtual environment:
 
-> pip install virtualenv \
-> pip -m virtualenv \<name-of-virtualenv>
+> py -3.10 -m pip install virtualenv \
+> py -3.10 -m venv \<name-of-virtualenv>
 
 Activate Python virtual environment:
 
