@@ -28,7 +28,7 @@ Add dependency of specific version:
 
 > poetry add \<name-of-package>@\<version>
 
-Write/resolve poetry lock file:
+Write/resolve poetry lock file (updates dependencies list by default):
 
 > poetry lock [--no-update]
 
