@@ -121,8 +121,10 @@ def main(
 
 if __name__ == "__main__":
     # if len(sys.argv) < 4:
-    #     print("Arguments missing.")
-    #     print("Usage: main.py <train_data_path> <test_data_path> <weights_output_path> [<weights_input_path>]")
+    #     print("\nArguments missing.\n")
+    #     print("Usage: main.py <train_data_path> <test_data_path> <weights_output_path>[ <weights_input_path>]\n")
+    #     print("Angled brackets <> refer to user-specific arguments that must be replaced accordingly.")
+    #     print("square brackets [] refer to optional arguments.\n")
 
     # else:
     #     train_data_path = sys.argv[1]
