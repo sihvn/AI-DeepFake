@@ -29,7 +29,11 @@ def extract_faces_from_frames(input_folder, output_folder):
                     print(f"Saved face {i} from {filename}")
 
 
-input_folder = "dataset\\DeepFakeDetection1\\real-frames"
-output_folder = "dataset\\DeepFakeDetection1-faces\\real"
+# ----------------------------------------------------------------------------------------------------
+# Test Run
+# ----------------------------------------------------------------------------------------------------
 
-extract_faces_from_frames(input_folder, output_folder)
+# input_folder = "dataset/DeepFakeDetection1/fake-frames"
+# output_folder = "dataset/DeepFakeDetection1/fake-faces"
+
+# extract_faces_from_frames(input_folder, output_folder)
