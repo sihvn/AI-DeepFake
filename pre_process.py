@@ -105,5 +105,5 @@ def extract_frames_and_faces(input_folder, class_name_0="real", class_name_1="fa
 # Execute
 # ----------------------------------------------------------------------------------------------------
 
-# extract_frames_and_faces("dataset/train/real")
+extract_frames_and_faces("dataset/train-small/real")
 # extract_frames_and_faces("dataset/train/fake")
