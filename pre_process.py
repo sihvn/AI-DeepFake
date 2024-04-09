@@ -94,9 +94,9 @@ def extract_faces(input_folder, output_folder):
 
 
 # Extract frames and faces from a folder of videos
-def extract_frames_and_faces(input_folder):
+def extract_frames_and_faces(input_folder, num_frames=5):
     # Extract frames from videos
-    extract_frames(input_folder, f"{input_folder}-frames")
+    extract_frames(input_folder, f"{input_folder}-frames", num_frames)
 
     # Extract faces from frames
     extract_faces(f"{input_folder}-frames", f"{input_folder}-faces")
