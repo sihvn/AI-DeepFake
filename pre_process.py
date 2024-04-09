@@ -6,68 +6,64 @@ import face_recognition
 from PIL import Image
 
 
-# extract frames from a single video
+# Extract frames from a single video
 def extract_frames_single_video(video_path, output_folder, video_name, num_frames=5):
     # Create the output folder if it doesn't exist
     os.makedirs(output_folder, exist_ok=True)
 
+    # Calculate the interval size for getting the desired number of evenly spaced frames between and excluding the first and last frames
     cap = cv2.VideoCapture(video_path)
-
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    # print(total_frames)
+    interval = math.floor(total_frames // (num_frames + 1))
 
-    interval = math.floor(total_frames // num_frames)
     if interval == 0:
         interval = 1
-    # print(interval)
 
+    # Iterate through the frames using the calculated step size and write the frame to output_folder
+    frame_index = interval
     frame_count = 0
-    success = True
-    frame_number = 0
-    while success and frame_number < total_frames:
-        # Set the frame number to read
-        cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
 
-        # Read a frame from the video
+    while frame_index < total_frames and frame_count < num_frames:
+        # Read the frame at the current frame_index
+        cap.set(cv2.CAP_PROP_POS_FRAMES, frame_index)
         success, frame = cap.read()
 
-        # Check if its time to capture a frame
-        if (
-            frame_number != 0
-            and interval != 0
-            and frame_number % interval == 0
-            and success
-        ):
+        # Write the frame to output_folder
+        if success:
             frame_path = os.path.join(output_folder, f"{video_name}_{frame_count}.jpg")
             cv2.imwrite(frame_path, frame)
-            # print(f"Saved frame {frame_count}")
-
             frame_count += 1
 
-        frame_number += interval
+        frame_index += interval
 
     cap.release()
-    print("Frame capture completed.")
 
 
-# extract frames from a folder of videos
-def extract_frames(video_folder, output_folder, num_frames=5):
+# Extract frames from a folder of videos
+def extract_frames(input_folder, output_folder, num_frames=5):
+    print(f'Extracting frames from "{input_folder}"...')
+
     # Create the output folder if it doesn't exist
     os.makedirs(output_folder, exist_ok=True)
 
     # Iterate through all files in the video folder
-    for file_name in os.listdir(video_folder):
+    for file_name in os.listdir(input_folder):
         if file_name.endswith((".mp4")):
-            video_path = os.path.join(video_folder, file_name)
+            video_path = os.path.join(input_folder, file_name)
             video_name = os.path.splitext(file_name)[0]
-            print(video_name)
             extract_frames_single_video(
                 video_path, output_folder, video_name, num_frames
             )
+            print(f'Frames have been extracted from "{file_name}".')
+
+    print(
+        f"A total of {len(os.listdir(output_folder))} frames have been extracted from {len(os.listdir(input_folder))} videos.\n"
+    )
 
 
-# extract faces from a folder of frames
+# Extract faces from a folder of frames
 def extract_faces(input_folder, output_folder):
+    print(f'Extracting faces from "{input_folder}"...')
     # Create the output folder if it doesn't exist
     os.makedirs(output_folder, exist_ok=True)
 
@@ -81,7 +77,7 @@ def extract_faces(input_folder, output_folder):
 
             # Extract and save faces
             for i, (top, right, bottom, left) in enumerate(face_locations):
-                # only extract faces greater than 75x75 pixels --> helps to ignore wrong faces from background objects
+                # Only extract faces greater than 75x75 pixels --> helps to ignore wrong faces from background objects
                 if (bottom - top > 75) and (right - left > 75):
                     face_roi = image[top:bottom, left:right]
                     face_path = os.path.join(
@@ -89,21 +85,25 @@ def extract_faces(input_folder, output_folder):
                     )
                     face_image = Image.fromarray(face_roi)
                     face_image.save(face_path)
-                    print(f"Saved face {i} from {filename}")
+
+                    print(f'Face {i} has been extracted from "{filename}".')
+
+    print(
+        f"A total of {len(os.listdir(output_folder))} faces have been extracted from {len(os.listdir(input_folder))} frames.\n"
+    )
 
 
-# extract frames and faces from a folder of videos
-def extract_frames_and_faces(input_folder, class_name_0="real", class_name_1="fake"):
-    # extract frames from videos
+# Extract frames and faces from a folder of videos
+def extract_frames_and_faces(input_folder):
+    # Extract frames from videos
     extract_frames(input_folder, f"{input_folder}-frames")
 
-    # extract faces from frames
+    # Extract faces from frames
     extract_faces(f"{input_folder}-frames", f"{input_folder}-faces")
 
 
-# ----------------------------------------------------------------------------------------------------
-# Execute
-# ----------------------------------------------------------------------------------------------------
-
-extract_frames_and_faces("dataset/train-small/real")
-# extract_frames_and_faces("dataset/train/fake")
+if __name__ == "__main__":
+    # extract_frames_and_faces("dataset/train-small/real")
+    # extract_frames_and_faces("dataset/train-small/fake")
+    extract_frames_and_faces("dataset/train/real")
+    extract_frames_and_faces("dataset/train/fake")
