@@ -65,7 +65,7 @@ def capture_frames_from_folder(video_folder, output_folder, num_frames=10):
 # ----------------------------------------------------------------------------------------------------
 
 # video_path = "dataset/DeepFakeDetection1/fake"
-# output_folder = "dataset/DeepFakeDetection1/fake-frames-temp"
+# output_folder = "dataset/DeepFakeDetection1/fake-frames"
 # num_frames_to_capture = 10
 
 # capture_frames_from_folder(video_path, output_folder, num_frames_to_capture)
