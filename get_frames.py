@@ -6,7 +6,8 @@ import face_recognition
 from PIL import Image
 
 
-def extract_frames_from_video(video_path, output_folder, video_name, num_frames=5):
+# extract frames from a single video
+def extract_frames_single_video(video_path, output_folder, video_name, num_frames=5):
     # Create the output folder if it doesn't exist
     os.makedirs(output_folder, exist_ok=True)
 
@@ -49,7 +50,8 @@ def extract_frames_from_video(video_path, output_folder, video_name, num_frames=
     print("Frame capture completed.")
 
 
-def extract_frames_from_folder(video_folder, output_folder, num_frames=10):
+# extract frames from a folder of videos
+def extract_frames(video_folder, output_folder, num_frames=5):
     # Create the output folder if it doesn't exist
     os.makedirs(output_folder, exist_ok=True)
 
@@ -59,10 +61,13 @@ def extract_frames_from_folder(video_folder, output_folder, num_frames=10):
             video_path = os.path.join(video_folder, file_name)
             video_name = os.path.splitext(file_name)[0]
             print(video_name)
-            extract_frames_from_video(video_path, output_folder, video_name, num_frames)
+            extract_frames_single_video(
+                video_path, output_folder, video_name, num_frames
+            )
 
 
-def extract_faces_from_frames(input_folder, output_folder):
+# extract faces from a folder of frames
+def extract_faces(input_folder, output_folder):
     # Create the output folder if it doesn't exist
     os.makedirs(output_folder, exist_ok=True)
 
@@ -87,9 +92,18 @@ def extract_faces_from_frames(input_folder, output_folder):
                     print(f"Saved face {i} from {filename}")
 
 
+# extract frames and faces from a folder of videos
+def extract_frames_and_faces(input_folder, class_name_0="real", class_name_1="fake"):
+    # extract frames from videos
+    extract_frames(input_folder, f"{input_folder}-frames")
+
+    # extract faces from frames
+    extract_faces(f"{input_folder}-frames", f"{input_folder}-faces")
+
+
 # ----------------------------------------------------------------------------------------------------
 # Execute
 # ----------------------------------------------------------------------------------------------------
 
-# extract_frames_from_folder("dataset/train/fake", "dataset/train/fake-frames")
-# extract_faces_from_frames("dataset/train/fake-frames", "dataset/train/fake-faces")
+# extract_frames_and_faces("dataset/train/real")
+# extract_frames_and_faces("dataset/train/fake")
