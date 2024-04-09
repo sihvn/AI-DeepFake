@@ -2,9 +2,11 @@ import math
 import os
 
 import cv2
+import face_recognition
+from PIL import Image
 
 
-def capture_frames(video_path, output_folder, video_name, num_frames=10):
+def extract_frames_from_video(video_path, output_folder, video_name, num_frames=5):
     # Create the output folder if it doesn't exist
     os.makedirs(output_folder, exist_ok=True)
 
@@ -37,7 +39,7 @@ def capture_frames(video_path, output_folder, video_name, num_frames=10):
         ):
             frame_path = os.path.join(output_folder, f"{video_name}_{frame_count}.jpg")
             cv2.imwrite(frame_path, frame)
-            print(f"Saved frame {frame_count}")
+            # print(f"Saved frame {frame_count}")
 
             frame_count += 1
 
@@ -47,7 +49,7 @@ def capture_frames(video_path, output_folder, video_name, num_frames=10):
     print("Frame capture completed.")
 
 
-def capture_frames_from_folder(video_folder, output_folder, num_frames=10):
+def extract_frames_from_folder(video_folder, output_folder, num_frames=10):
     # Create the output folder if it doesn't exist
     os.makedirs(output_folder, exist_ok=True)
 
@@ -57,15 +59,37 @@ def capture_frames_from_folder(video_folder, output_folder, num_frames=10):
             video_path = os.path.join(video_folder, file_name)
             video_name = os.path.splitext(file_name)[0]
             print(video_name)
-            capture_frames(video_path, output_folder, video_name, num_frames)
+            extract_frames_from_video(video_path, output_folder, video_name, num_frames)
+
+
+def extract_faces_from_frames(input_folder, output_folder):
+    # Create the output folder if it doesn't exist
+    os.makedirs(output_folder, exist_ok=True)
+
+    for filename in os.listdir(input_folder):
+        if filename.endswith((".jpg", ".jpeg", ".png")):
+            image_path = os.path.join(input_folder, filename)
+            image = face_recognition.load_image_file(image_path)
+
+            # Find all face locations in the image
+            face_locations = face_recognition.face_locations(image)
+
+            # Extract and save faces
+            for i, (top, right, bottom, left) in enumerate(face_locations):
+                # only extract faces greater than 75x75 pixels --> helps to ignore wrong faces from background objects
+                if (bottom - top > 75) and (right - left > 75):
+                    face_roi = image[top:bottom, left:right]
+                    face_path = os.path.join(
+                        output_folder, f"{os.path.splitext(filename)[0]}_face_{i}.jpg"
+                    )
+                    face_image = Image.fromarray(face_roi)
+                    face_image.save(face_path)
+                    print(f"Saved face {i} from {filename}")
 
 
 # ----------------------------------------------------------------------------------------------------
-# Test Run
+# Execute
 # ----------------------------------------------------------------------------------------------------
 
-# video_path = "dataset/DeepFakeDetection1/fake"
-# output_folder = "dataset/DeepFakeDetection1/fake-frames"
-# num_frames_to_capture = 10
-
-# capture_frames_from_folder(video_path, output_folder, num_frames_to_capture)
+# extract_frames_from_folder("dataset/train/fake", "dataset/train/fake-frames")
+# extract_faces_from_frames("dataset/train/fake-frames", "dataset/train/fake-faces")
