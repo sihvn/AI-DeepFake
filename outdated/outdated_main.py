@@ -4,11 +4,10 @@ from keras.applications import EfficientNetB0, ResNet50
 from keras.layers import Dense, GlobalAveragePooling2D
 from keras.models import Model
 from keras.preprocessing.image import ImageDataGenerator
-
-from evaluate import *
-from model import *
-from pre_process import *
-from train import *
+from outdated_evaluate import *
+from outdated_model import *
+from outdated_pre_process import *
+from outdated_train import *
 
 
 def main(

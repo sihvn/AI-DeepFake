@@ -7,7 +7,9 @@ from PIL import Image
 
 
 # Extract frames from a single video
-def extract_frames_single_video(video_path, output_folder, video_name, num_frames=5):
+def extract_frames_single_video(
+    video_path: str, output_folder: str, video_name: str, num_frames: int = 5
+) -> None:
     # Create the output folder if it doesn't exist
     os.makedirs(output_folder, exist_ok=True)
 
@@ -40,7 +42,7 @@ def extract_frames_single_video(video_path, output_folder, video_name, num_frame
 
 
 # Extract frames from a folder of videos
-def extract_frames(input_folder, output_folder, num_frames=5):
+def extract_frames(input_folder: str, output_folder: str, num_frames: int = 5) -> None:
     print(f'Extracting frames from "{input_folder}"...')
 
     # Create the output folder if it doesn't exist
@@ -62,7 +64,7 @@ def extract_frames(input_folder, output_folder, num_frames=5):
 
 
 # Extract faces from a folder of frames
-def extract_faces(input_folder, output_folder):
+def extract_faces(input_folder: str, output_folder: str) -> None:
     print(f'Extracting faces from "{input_folder}"...')
     # Create the output folder if it doesn't exist
     os.makedirs(output_folder, exist_ok=True)
@@ -95,8 +97,10 @@ def extract_faces(input_folder, output_folder):
 
 # Extract frames and faces from the dataset root directory, which is split into real and fake subdirectories
 def extract_frames_and_faces(
-    dataset_root_dir, real_subdirectory="real", fake_subdirectory="fake"
-):
+    dataset_root_dir: str,
+    real_subdirectory: str = "real",
+    fake_subdirectory: str = "fake",
+) -> None:
     # Extract frames from videos
     extract_frames(
         f"{dataset_root_dir}/{real_subdirectory}",
