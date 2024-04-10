@@ -119,4 +119,4 @@ def extract_frames_and_faces(
 
 
 if __name__ == "__main__":
-    extract_frames_and_faces("dataset/train_small")
+    extract_frames_and_faces("dataset/train")
