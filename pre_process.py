@@ -93,17 +93,30 @@ def extract_faces(input_folder, output_folder):
     )
 
 
-# Extract frames and faces from a folder of videos
-def extract_frames_and_faces(input_folder):
+# Extract frames and faces from the dataset root directory, which is split into real and fake subdirectories
+def extract_frames_and_faces(
+    dataset_root_dir, real_subdirectory="real", fake_subdirectory="fake"
+):
     # Extract frames from videos
-    extract_frames(input_folder, f"{input_folder}-frames")
+    extract_frames(
+        f"{dataset_root_dir}/{real_subdirectory}",
+        f"{dataset_root_dir}/{real_subdirectory}_frames",
+    )
+    extract_frames(
+        f"{dataset_root_dir}/{fake_subdirectory}",
+        f"{dataset_root_dir}/{fake_subdirectory}_frames",
+    )
 
     # Extract faces from frames
-    extract_faces(f"{input_folder}-frames", f"{input_folder}-faces")
+    extract_faces(
+        f"{dataset_root_dir}/{real_subdirectory}_frames",
+        f"{dataset_root_dir}/{real_subdirectory}_faces",
+    )
+    extract_faces(
+        f"{dataset_root_dir}/{fake_subdirectory}_frames",
+        f"{dataset_root_dir}/{fake_subdirectory}_faces",
+    )
 
 
 if __name__ == "__main__":
-    # extract_frames_and_faces("dataset/train-small/real")
-    # extract_frames_and_faces("dataset/train-small/fake")
-    extract_frames_and_faces("dataset/train/real")
-    extract_frames_and_faces("dataset/train/fake")
+    extract_frames_and_faces("dataset/train_small")
