@@ -45,17 +45,7 @@ class DeepfakeDetectionDataset(Dataset):
         return image, label
 
 
-def inspect_dataloader(dataloader: DataLoader) -> None:
-    # Assign GPU as device if available, else assign cpu
-    print("Cuda is available:", torch.cuda.is_available())
-
-    if torch.cuda.is_available():
-        device = torch.device("cuda")
-        print("Using cuda device:", torch.cuda.get_device_name())
-    else:
-        device = torch.device("cpu")
-        print("Using CPU")
-
+def inspect_dataloader(dataloader: DataLoader, device: torch.device) -> None:
     # Get the first batch
     images, labels = next(iter(dataloader))
 
@@ -72,7 +62,9 @@ def inspect_dataloader(dataloader: DataLoader) -> None:
 
 # Return train_loader, val_loader, test_loader
 def get_data_loaders(
-    dataset_root_dir: str, seed: int = 33
+    dataset_root_dir: str,
+    device: torch.device,
+    seed: int = 33,
 ) -> tuple[DataLoader, DataLoader, DataLoader]:
     transform = transforms.Compose(
         [
@@ -97,11 +89,8 @@ def get_data_loaders(
     print(test_size)
 
     # Split the dataset
-    train_dataset, test_dataset, val_dataset = random_split(
-        dataset, [train_size, test_size, val_size], torch.Generator().manual_seed(seed)
-    )
-    train_dataset, test_dataset = random_split(
-        dataset, [train_size, test_size], torch.Generator().manual_seed(seed)
+    train_dataset, val_dataset, test_dataset = random_split(
+        dataset, [train_size, val_size, test_size], torch.Generator().manual_seed(seed)
     )
 
     # DataLoaders
@@ -126,12 +115,12 @@ def get_data_loaders(
     )
 
     print("Inspecting Training DataLoader:")
-    inspect_dataloader(train_loader)
+    inspect_dataloader(train_loader, device)
 
     print("\nInspecting Validation DataLoader:")
-    inspect_dataloader(val_loader)
+    inspect_dataloader(val_loader, device)
 
     print("\nInspecting Testing DataLoader:")
-    inspect_dataloader(test_loader)
+    inspect_dataloader(test_loader, device)
 
     return train_loader, val_loader, test_loader

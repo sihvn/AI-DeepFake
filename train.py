@@ -14,17 +14,8 @@ def train_model(
     optimizer: optim.Adam,
     dataloader: DataLoader,
     num_epochs: int,
+    device: torch.device,
 ) -> models.ResNet:
-    # Assign GPU as device if available, else assign cpu
-    print("Cuda is available:", torch.cuda.is_available())
-
-    if torch.cuda.is_available():
-        device = torch.device("cuda")
-        print("Using cuda device:", torch.cuda.get_device_name())
-    else:
-        device = torch.device("cpu")
-        print("Using CPU")
-
     model.train()  # Set model to training mode
 
     for epoch in range(num_epochs):
@@ -35,7 +26,7 @@ def train_model(
             # print(f"Input batch shape: {inputs.shape}")
             # print(f"Labels batch shape: {labels.shape}")
 
-            # Move data to cuda device
+            # Move data to processor device (GPU if available)
             inputs = inputs.to(device)
             labels = labels.to(device)
 

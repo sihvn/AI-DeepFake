@@ -3,17 +3,7 @@ import torch.nn as nn
 from torchvision import models
 
 
-def get_model() -> models.ResNet:
-    # Assign GPU as device if available, else assign cpu
-    print("Cuda is available:", torch.cuda.is_available())
-
-    if torch.cuda.is_available():
-        device = torch.device("cuda")
-        print("Using cuda device:", torch.cuda.get_device_name())
-    else:
-        device = torch.device("cpu")
-        print("Using CPU")
-
+def get_model(device: torch.device) -> models.ResNet:
     # Load a pre-trained ResNet50 model
     model = models.resnet50(weights="ResNet50_Weights.IMAGENET1K_V1")
 
