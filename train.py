@@ -9,13 +9,15 @@ from torchvision import models
 # Model
 # ----------------------------------------------------------------------------------------------------
 def train_model(
-    model: models.ResNet,
+    model: models.ResNet | models.EfficientNet,
     criterion: nn.CrossEntropyLoss,
     optimizer: optim.Adam,
     dataloader: DataLoader,
     num_epochs: int,
     device: torch.device,
 ) -> models.ResNet:
+    print("Training in progress...\n")
+
     model.train()  # Set model to training mode
 
     for epoch in range(num_epochs):
@@ -53,5 +55,5 @@ def train_model(
             f"Epoch {epoch+1}/{num_epochs}, Loss: {epoch_loss:.4f}, Acc: {epoch_acc:.4f}"
         )
 
-    print("Training complete")
+    print("\nTraining complete.\n")
     return model

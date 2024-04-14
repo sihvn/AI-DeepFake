@@ -6,6 +6,9 @@ import face_recognition
 from PIL import Image
 
 
+# ----------------------------------------------------------------------------------------------------
+# Helper Functions
+# ----------------------------------------------------------------------------------------------------
 # Extract frames from a single video
 def extract_frames_single_video(
     video_path: str, output_folder: str, video_name: str, num_frames: int = 5
@@ -95,6 +98,9 @@ def extract_faces(input_folder: str, output_folder: str) -> None:
     )
 
 
+# ----------------------------------------------------------------------------------------------------
+# Main Function
+# ----------------------------------------------------------------------------------------------------
 # Extract frames and faces from the dataset root directory, which is split into real and fake subdirectories
 def extract_frames_and_faces(
     dataset_root_dir: str,
@@ -122,5 +128,8 @@ def extract_frames_and_faces(
     )
 
 
+# ----------------------------------------------------------------------------------------------------
+# Execution
+# ----------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
-    extract_frames_and_faces("dataset/train_small")
+    extract_frames_and_faces("dataset/train")

@@ -6,7 +6,7 @@ from torchvision import models
 
 
 def validate(
-    model: models.ResNet,
+    model: models.ResNet | models.EfficientNet,
     criterion: nn.CrossEntropyLoss,
     validate_loader: DataLoader,
     device: torch.device,

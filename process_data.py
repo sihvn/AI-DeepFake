@@ -52,12 +52,12 @@ def inspect_dataloader(dataloader: DataLoader, device: torch.device) -> None:
     images = images.to(device)
     labels = labels.to(device)
 
-    print("Is images cuda:", images.is_cuda)
-    print("Is labels cuda:", labels.is_cuda)
+    print("    Is images cuda:", images.is_cuda)
+    print("    Is labels cuda:", labels.is_cuda)
 
     # Print the shapes and labels of the batch
-    print(f"Batch shape: {images.shape}")
-    print(f"Labels: {labels}")
+    print(f"    Batch shape: {images.shape}")
+    print(f"    Labels: {labels}")
 
 
 # Return train_loader, val_loader, test_loader
@@ -78,15 +78,17 @@ def get_data_loaders(
 
     # Split sizes
     total_size = len(dataset)
-    # print(total_size)
-    # train_loader = DataLoader(dataset, batch_size=16, shuffle=True)
+
     train_size = int(0.8 * total_size)
     test_size = int(0.1 * total_size)
     val_size = total_size - train_size - test_size  # Remainder for validation
 
-    print(train_size)
-    print(val_size)
-    print(test_size)
+    print("Dataset information:")
+    print("    Total dataset size:", total_size)
+    print("    Train set size:", train_size)
+    print("    Validation set size:", val_size)
+    print("    Test set size:", test_size)
+    print()
 
     # Split the dataset
     train_dataset, val_dataset, test_dataset = random_split(
@@ -116,11 +118,14 @@ def get_data_loaders(
 
     print("Inspecting Training DataLoader:")
     inspect_dataloader(train_loader, device)
+    print()
 
-    print("\nInspecting Validation DataLoader:")
+    print("Inspecting Validation DataLoader:")
     inspect_dataloader(val_loader, device)
+    print()
 
-    print("\nInspecting Testing DataLoader:")
+    print("Inspecting Testing DataLoader:")
     inspect_dataloader(test_loader, device)
+    print()
 
     return train_loader, val_loader, test_loader
