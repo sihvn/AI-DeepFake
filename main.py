@@ -16,11 +16,12 @@ from train import *
 # Constants
 # ----------------------------------------------------------------------------------------------------
 # valid inputs for model_name argument
-valid_model_name_inputs = ["ResNet50", "EfficientNetB0"]
+valid_model_name_inputs = ResNet_models + EfficientNet_models
 
-# valid inputs for train_or_predict argument
-valid_train_inputs = ["", "t", "T", "train", "Train"]
-valid_predict_inputs = ["p", "P", "predict", "Predict"]
+# valid inputs for train_test_predict argument
+valid_train_inputs = ["", "train", "Train"]
+valid_test_inputs = ["test", "Test"]
+valid_predict_inputs = ["predict", "Predict"]
 
 # valid inputs for require_pre_process argument
 valid_is_require_pre_process_inputs = [
@@ -88,48 +89,47 @@ def prompt_model_name(model_name="!invalid!") -> str:
     return model_name
 
 
-def prompt_train_or_predict(train_or_predict_input="!invalid!") -> str:
-    # initial check if train_or_predict_input was provided
-    if train_or_predict_input != "!invalid!" and (
-        train_or_predict_input not in valid_train_inputs
-        and train_or_predict_input not in valid_predict_inputs
+def prompt_train_test_predict(train_test_predict_input="!invalid!") -> str:
+    # initial check if train_test_predict_input was provided
+    if train_test_predict_input != "!invalid!" and train_test_predict_input not in (
+        valid_train_inputs + valid_test_inputs + valid_predict_inputs
     ):
         print(
-            f"Invalid value provided for 'train_or_predict': '{train_or_predict_input}'."
+            f"Invalid value provided for 'train_test_predict': '{train_test_predict_input}'."
         )
         print(
-            f"Expected input: {valid_train_inputs + valid_predict_inputs}.",
+            f"Expected input: {valid_train_inputs + valid_test_inputs + valid_predict_inputs}.",
         )
         print("Enter the correct value for the following input prompt...\n")
 
-    # prompt if train_or_predict_input is invalid
-    while (
-        train_or_predict_input not in valid_train_inputs
-        and train_or_predict_input not in valid_predict_inputs
+    # prompt if train_test_predict_input is invalid
+    while train_test_predict_input not in (
+        valid_train_inputs + valid_test_inputs + valid_predict_inputs
     ):
-        train_or_predict_input = input(
-            "Do you want to train the model or make predictions (T/P)? "
+        train_test_predict_input = input(
+            "Do you want to train the model, test the model, or make predictions (Train/Test/Predict)? "
         )
 
-        if (
-            train_or_predict_input not in valid_train_inputs
-            and train_or_predict_input not in valid_predict_inputs
+        if train_test_predict_input not in (
+            valid_train_inputs + valid_test_inputs + valid_predict_inputs
         ):
             print(
-                f"Invalid response. Expected input: {valid_train_inputs + valid_predict_inputs}."
+                f"Invalid response. Expected input: {valid_train_inputs + valid_test_inputs + valid_predict_inputs}."
             )
 
         print()
 
-    if train_or_predict_input == "":
+    if train_test_predict_input == "":
         print("Default selection: Train")
 
-    if train_or_predict_input in valid_train_inputs:
-        train_or_predict = "Train"
-    elif train_or_predict_input in valid_predict_inputs:
-        train_or_predict = "Predict"
+    if train_test_predict_input in valid_train_inputs:
+        train_test_predict = "Train"
+    elif train_test_predict_input in valid_test_inputs:
+        train_test_predict = "Test"
+    elif train_test_predict_input in valid_predict_inputs:
+        train_test_predict = "Predict"
 
-    return train_or_predict
+    return train_test_predict
 
 
 def prompt_dataset_root_dir(dataset_root_dir="!invalid!") -> str:
@@ -249,12 +249,12 @@ def prompt_require_pre_process(
     return require_pre_process
 
 
-def prompt_weights_path(train_or_predict: bool, weights_path="!invalid!") -> str:
+def prompt_weights_path(train_test_predict: bool, weights_path="!invalid!") -> str:
     # initial check if weights_path was provided
     weights_dir = "/".join(weights_path.split("/")[0:-1])
 
     if (
-        train_or_predict == "Train"
+        train_test_predict == "Train"
         and weights_path != "!invalid!"
         and not (os.path.exists(weights_dir))
     ):
@@ -264,7 +264,7 @@ def prompt_weights_path(train_or_predict: bool, weights_path="!invalid!") -> str
         print("Expected input: <weights_dir>/<weights_file>.")
         print("Enter the correct value for the following input prompt...\n")
     elif (
-        train_or_predict == "Predict"
+        (train_test_predict == "Test" or train_test_predict == "Predict")
         and weights_path != "!invalid!"
         and not (os.path.exists(weights_path))
     ):
@@ -272,17 +272,8 @@ def prompt_weights_path(train_or_predict: bool, weights_path="!invalid!") -> str
             f"Invalid value provided for 'weights_path': '{weights_path}'. File not found."
         )
         print("Enter the correct value for the following input prompt...\n")
-    elif (
-        train_or_predict == "Predict"
-        and weights_path != "!invalid!"
-        and os.path.isdir(weights_path)
-    ):
-        print(
-            f"Invalid value provided for 'weights_path': '{weights_path}'. Expected file path but received directory path."
-        )
-        print("Enter the correct value for the following input prompt...\n")
 
-    if os.path.exists(weights_dir):
+    if train_test_predict == "Train" and os.path.exists(weights_dir):
         try:
             with open(weights_path, "w"):
                 pass
@@ -294,7 +285,7 @@ def prompt_weights_path(train_or_predict: bool, weights_path="!invalid!") -> str
 
     # prompt if weights_path is invalid
     # If the user is training the model, ask for relative path to where the user wants to save the weights
-    if train_or_predict == "Train":
+    if train_test_predict == "Train":
         while not (os.path.exists(weights_path)):
             weights_path = input(
                 "Provide the relative path to the output weights file: "
@@ -318,10 +309,8 @@ def prompt_weights_path(train_or_predict: bool, weights_path="!invalid!") -> str
 
             print()
 
-    # natthan : should check if path is directory or file
-
-    # Else if the user is using the model to predict, ask for relative path to the pre-trained weights file
-    elif train_or_predict == "Predict":
+    # Else if the user is using the model to test or predict, ask for relative path to the pre-trained weights file
+    elif train_test_predict == "Test" or train_test_predict == "Predict":
         while not (os.path.exists(weights_path)) or os.path.isdir(weights_path):
             weights_path = input(
                 "Provide the relative path to the pre-trained weights file: "
@@ -480,7 +469,7 @@ def prompt_seed(custom_seed_input="!invalid!") -> int:
 # ----------------------------------------------------------------------------------------------------
 def main(
     model_name: str,
-    train_or_predict: str,
+    train_test_predict: str,
     dataset_root_dir: str,
     require_pre_process: bool,
     weights_path: str,
@@ -526,65 +515,95 @@ def main(
     # ----------------------------------------------------------------------------------------------------
     # Process Data - create data loaders from the pre-processed data
     # ----------------------------------------------------------------------------------------------------
-    train_loader, test_loader, val_loader = get_data_loaders(
-        dataset_root_dir, device, seed
-    )
+    if train_test_predict == "Train":
+        train_loader, val_loader, test_loader = get_train_data_loaders(
+            dataset_root_dir, device, seed
+        )
+    elif train_test_predict == "Test":
+        test_loader = get_test_data_loader(dataset_root_dir, device)
+    elif train_test_predict == "Predict":
+        predict_loader = get_predict_data_loader(dataset_root_dir, device)
 
     # ----------------------------------------------------------------------------------------------------
     # Model - initialise the model
     # ----------------------------------------------------------------------------------------------------
     model = get_model(model_name, device)
 
-    if initial_weights_path != "None":
-        pass  # natthan
-
     # ----------------------------------------------------------------------------------------------------
     # Train - train the model
     # ----------------------------------------------------------------------------------------------------
-    criterion = nn.CrossEntropyLoss()
+    if train_test_predict == "Train":
+        criterion = nn.CrossEntropyLoss()
 
-    # L2 Regularization
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+        # Vary optimizer function
+        # optimizer = optim.SGD(model.parameters(), lr=0.001)
+        # optimizer = optim.Adadelta(model.parameters(), lr=0.001)
+        # optimizer = optim.RMSprop(model.parameters(), lr=0.001)
 
-    model = train_model(model, criterion, optimizer, train_loader, 10, device)
+        # Vary learning rate
+        # optimizer = optim.Adam(model.parameters(), lr=0.005)
+        # optimizer = optim.Adam(model.parameters(), lr=0.001)
+        # optimizer = optim.Adam(model.parameters(), lr=0.0005)
+        # optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
-    # Save weights
-    torch.save(model.state_dict(), weights_path)
+        # Vary L2 regularization via weight_decay
+        # optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=0.1)
+        # optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=0.01)
+        # optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=0.001)
+        # optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=0.0001)
+        # optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=0.00001)
+        # optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=0.000001)
+        # optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=0.0000001)
+
+        if model_name in ResNet_models:
+            optimizer = optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+        if model_name in EfficientNet_models:
+            optimizer = optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-6)
+
+        model = train_model(model, criterion, optimizer, train_loader, 15, device)
+
+        # Save weights
+        torch.save(model.state_dict(), weights_path)
 
     # ----------------------------------------------------------------------------------------------------
     # Evaluate
     # ----------------------------------------------------------------------------------------------------
     # Load weights
-    # model.load_state_dict(torch.load('weights/BCE_LR0.001_EPOCH10.pth'))
+    if train_test_predict == "Test" or train_test_predict == "Predict":
+        model.load_state_dict(torch.load(weights_path))
 
     # Evaluate the model
-    # validate(model, criterion, val_loader, device)
-    val_accuracy, val_precision, val_recall, val_f1 = evaluate(
-        model, val_loader, device
-    )
-    test_accuracy, test_precision, test_recall, test_f1 = evaluate(
-        model, test_loader, device
-    )
-    print("Validation score:")
-    print(f"    Accuracy: {val_accuracy:.4f}")
-    print(f"    Precision: {val_precision:.4f}")
-    print(f"    Recall: {val_recall:.4f}")
-    print(f"    F1 Score: {val_f1:.4f}")
-    print()
+    if train_test_predict == "Train":
+        val_accuracy, val_precision, val_recall, val_f1 = evaluate(
+            model, val_loader, device
+        )
+        print("Validation Scores:")
+        print(f"    Accuracy: {val_accuracy:.4f}")
+        print(f"    Precision: {val_precision:.4f}")
+        print(f"    Recall: {val_recall:.4f}")
+        print(f"    F1 Score: {val_f1:.4f}")
+        print()
 
-    print("Test score:")
-    print(f"    Accuracy: {test_accuracy:.4f}")
-    print(f"    Precision: {test_precision:.4f}")
-    print(f"    Recall: {test_recall:.4f}")
-    print(f"    F1 Score: {test_f1:.4f}")
-    print()
+    if train_test_predict == "Train" or train_test_predict == "Test":
+        test_accuracy, test_precision, test_recall, test_f1 = evaluate(
+            model, test_loader, device
+        )
+        print("Test Scores:")
+        print(f"    Accuracy: {test_accuracy:.4f}")
+        print(f"    Precision: {test_precision:.4f}")
+        print(f"    Recall: {test_recall:.4f}")
+        print(f"    F1 Score: {test_f1:.4f}")
+        print()
+
+    elif train_test_predict == "Predict":
+        print("Prediction Results:")
 
 
 # ----------------------------------------------------------------------------------------------------
 # Execution
 # ----------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
-    train_or_predict = "train"
+    train_test_predict = "train"
     dataset_root_dir = ""
     require_pre_process = False
     weights_path = ""
@@ -597,7 +616,7 @@ if __name__ == "__main__":
     if len(sys.argv) < 6:
         print("Insufficient arguments provided.\n")
         print(
-            "Usage: main.py <train_or_predict> <dataset_root_dir> <require_pre_process> <weights_path>[ <initial_weights_path>][ <seed>]"
+            "Usage: main.py <train_test_predict> <dataset_root_dir> <require_pre_process> <weights_path>[ <initial_weights_path>][ <seed>]"
         )
         print(
             "- Angle brackets <> refer to arguments that must be replaced with the desired values."
@@ -614,13 +633,13 @@ if __name__ == "__main__":
     if len(sys.argv) >= 2:
         model_name = prompt_model_name(sys.argv[1])
 
-    # If user did not provide "train_or_predict" argument, ask for "train_or_predict"
+    # If user did not provide "train_test_predict" argument, ask for "train_test_predict"
     if len(sys.argv) <= 2:
-        train_or_predict = prompt_train_or_predict()
+        train_test_predict = prompt_train_test_predict()
 
-    # If user provided "train_or_predict" argument, assign the value to "train_or_predict"
+    # If user provided "train_test_predict" argument, assign the value to "train_test_predict"
     if len(sys.argv) >= 3:
-        train_or_predict = prompt_train_or_predict(sys.argv[2])
+        train_test_predict = prompt_train_test_predict(sys.argv[2])
 
     # If user did not provide "dataset_root_dir" argument, ask for "dataset_root_dir"
     if len(sys.argv) <= 3:
@@ -640,18 +659,18 @@ if __name__ == "__main__":
 
     # If the user did not provide "weights_path" argument, ask for "weights_path"
     if len(sys.argv) <= 5:
-        weights_path = prompt_weights_path(train_or_predict)
+        weights_path = prompt_weights_path(train_test_predict)
 
     # If user provided "weights_path" argument, assign the value to "weights_path"
     if len(sys.argv) >= 6:
-        weights_path = prompt_weights_path(train_or_predict, sys.argv[5])
+        weights_path = prompt_weights_path(train_test_predict, sys.argv[5])
 
     # If the user did not provide all of the mandatory arguments, and if using the model in training mode,
     # ask for optional "initial_weights_path"
     if len(sys.argv) < 6:
-        if train_or_predict == "Train":
+        if train_test_predict == "Train":
             initial_weights_path = prompt_initial_weights_path()
-        elif train_or_predict == "Predict":
+        elif train_test_predict == "Test" or train_test_predict == "Predict":
             initial_weights_path = "None"
 
     # If user provided "initial_weights_path" argument, assign the value to "initial_weights_path"
@@ -659,22 +678,21 @@ if __name__ == "__main__":
         initial_weights_path = sys.argv[6]
 
         if (
-            train_or_predict == "Predict"
-            and initial_weights_path not in valid_null_initial_weights_path_inputs
-        ):
+            train_test_predict == "Test" or train_test_predict == "Predict"
+        ) and initial_weights_path not in valid_null_initial_weights_path_inputs:
             print(
                 f"Invalid value provided for 'initial_weights_path': '{initial_weights_path}'."
             )
             print(
-                "This argument is for training, but the value of 'train_or_predict' chosen is 'Predict'."
+                "This argument is for training, but the value of 'train_test_predict' chosen is 'Predict'."
             )
             print(
-                f"Expected input when 'train_or_predict' is 'Predict': {valid_null_initial_weights_path_inputs}."
+                f"Expected input when 'train_test_predict' is 'Predict': {valid_null_initial_weights_path_inputs}."
             )
             print("The provided value for 'initial_weights_path' will be ignored.\n")
 
             initial_weights_path = "None"
-        elif train_or_predict == "Train":
+        elif train_test_predict == "Train":
             initial_weights_path = prompt_initial_weights_path(initial_weights_path)
 
     # If the user did not provide all of the mandatory arguments, ask for optional "seed"
@@ -688,7 +706,7 @@ if __name__ == "__main__":
     if len(sys.argv) <= 8:
         print("Selected parameters:")
         print("    model_name:", model_name)
-        print("    train_or_predict:", train_or_predict)
+        print("    train_test_predict:", train_test_predict)
         print("    dataset_root_dir:", dataset_root_dir)
         print("    require_pre_process:", require_pre_process)
         print("    weights_path:", weights_path)
@@ -698,7 +716,7 @@ if __name__ == "__main__":
 
         main(
             model_name,
-            train_or_predict,
+            train_test_predict,
             dataset_root_dir,
             require_pre_process,
             weights_path,
@@ -713,15 +731,106 @@ if __name__ == "__main__":
 # ----------------------------------------------------------------------------------------------------
 # Training Cases
 # ----------------------------------------------------------------------------------------------------
+# Best ResNet architecture and EfficientNet architecture
+# main(
+#     "ResNet50",
+#     "Train",
+#     "dataset/train",
+#     False,
+#     "weights/ResNet50_Adam_LR1e-4_WD0_DP0_EP15.pth",
+# )
+# main(
+#     "EfficientNetB2",
+#     "Train",
+#     "dataset/train",
+#     False,
+#     "weights/EfficientNetB2_Adam_LR1e-4_WD0_DP0_EP15.pth",
+# )
 
-# test ResNet50
-# py main.py ResNet50 train dataset/train_small false weights/test_small.pth
+# ResNet Architecture Exploration
+# main(
+#     "ResNet18",
+#     "Train",
+#     "dataset/train",
+#     False,
+#     "weights/ResNet18_Adam_LR1e-3_EP15.pth",
+# )
+# main(
+#     "ResNet34",
+#     "Train",
+#     "dataset/train",
+#     False,
+#     "weights/ResNet34_Adam_LR1e-3_EP15.pth",
+# )
+# main(
+#     "ResNet50",
+#     "Train",
+#     "dataset/train",
+#     False,
+#     "weights/ResNet50_Adam_LR1e-3_EP15.pth",
+# )
+# main(
+#     "ResNet101",
+#     "Train",
+#     "dataset/train",
+#     False,
+#     "weights/ResNet101_Adam_LR1e-3_EP15.pth",
+# )
+# main(
+#     "ResNet152",
+#     "Train",
+#     "dataset/train",
+#     False,
+#     "weights/ResNet152_Adam_LR1e-3_EP15.pth",
+# )
 
-# test EfficientNetB0
-# py main.py EfficientNetB0 train dataset/train_small false weights/test_small.pth
+# EfficientNet Architecture Exploration
+# main(
+#     "EfficientNetB0",
+#     "Train",
+#     "dataset/train",
+#     False,
+#     "weights/EfficientNetB0_Adam_LR1e-3_EP15.pth",
+# )
+# main(
+#     "EfficientNetB1",
+#     "Train",
+#     "dataset/train",
+#     False,
+#     "weights/EfficientNetB1_Adam_LR1e-3_EP15.pth",
+# )
+# main(
+#     "EfficientNetB2",
+#     "Train",
+#     "dataset/train",
+#     False,
+#     "weights/EfficientNetB2_Adam_LR1e-3_EP15.pth",
+# )
+# main(
+#     "EfficientNetB3",
+#     "Train",
+#     "dataset/train",
+#     False,
+#     "weights/EfficientNetB3_Adam_LR1e-3_EP15.pth",
+# )
+# main(
+#     "EfficientNetB4",
+#     "Train",
+#     "dataset/train",
+#     False,
+#     "weights/EfficientNetB4_Adam_LR1e-3_EP15.pth",
+# )
+# main(
+#     "EfficientNetB5",
+#     "Train",
+#     "dataset/train",
+#     False,
+#     "weights/EfficientNetB5_Adam_LR1e-3_EP15.pth",
+# )
+
 
 # ----------------------------------------------------------------------------------------------------
-# Test Cases
+# Command Line Test Cases
 # ----------------------------------------------------------------------------------------------------
 
 # invalid model_name
@@ -730,7 +839,7 @@ if __name__ == "__main__":
 # valid model_name
 # py main.py ResNet50
 
-# invalid train_or_predict
+# invalid train_test_predict
 # py main.py ResNet50 tra
 
 # valid train_or predict

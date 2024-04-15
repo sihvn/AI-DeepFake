@@ -61,7 +61,7 @@ def inspect_dataloader(dataloader: DataLoader, device: torch.device) -> None:
 
 
 # Return train_loader, val_loader, test_loader
-def get_data_loaders(
+def get_train_data_loaders(
     dataset_root_dir: str,
     device: torch.device,
     seed: int = 33,
@@ -80,8 +80,8 @@ def get_data_loaders(
     total_size = len(dataset)
 
     train_size = int(0.8 * total_size)
-    test_size = int(0.1 * total_size)
-    val_size = total_size - train_size - test_size  # Remainder for validation
+    val_size = int(0.1 * total_size)
+    test_size = total_size - train_size - val_size  # Remainder for validation
 
     print("Dataset information:")
     print("    Total dataset size:", total_size)
@@ -97,6 +97,7 @@ def get_data_loaders(
 
     # DataLoaders
     batch_size = 32
+
     train_loader = DataLoader(
         train_dataset,
         batch_size=batch_size,
@@ -129,3 +130,73 @@ def get_data_loaders(
     print()
 
     return train_loader, val_loader, test_loader
+
+
+# Return test_loader
+def get_test_data_loader(
+    dataset_root_dir: str,
+    device: torch.device,
+) -> tuple[DataLoader, DataLoader, DataLoader]:
+    transform = transforms.Compose(
+        [
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ]
+    )
+
+    dataset = DeepfakeDetectionDataset(dataset_root_dir, transform)
+
+    print("Dataset information:")
+    print("    Total dataset size:", len(dataset))
+
+    # DataLoaders
+    batch_size = 32
+
+    test_loader = DataLoader(
+        dataset,
+        batch_size=batch_size,
+        shuffle=False,
+        pin_memory=torch.cuda.is_available(),
+    )
+
+    print("Inspecting Testing DataLoader:")
+    inspect_dataloader(test_loader, device)
+    print()
+
+    return test_loader
+
+
+# Return predict_loader
+def get_predict_data_loader(
+    dataset_root_dir: str,
+    device: torch.device,
+) -> tuple[DataLoader, DataLoader, DataLoader]:
+    transform = transforms.Compose(
+        [
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ]
+    )
+
+    dataset = DeepfakeDetectionDataset(dataset_root_dir, transform)
+
+    print("Dataset information:")
+    print("    Total dataset size:", len(dataset))
+
+    # DataLoaders
+    batch_size = 32
+
+    predict_loader = DataLoader(
+        dataset,
+        batch_size=batch_size,
+        shuffle=False,
+        pin_memory=torch.cuda.is_available(),
+    )
+
+    print("Inspecting Testing DataLoader:")
+    inspect_dataloader(predict_loader, device)
+    print()
+
+    return predict_loader

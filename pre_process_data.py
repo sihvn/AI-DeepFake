@@ -59,7 +59,7 @@ def extract_frames(input_folder: str, output_folder: str, num_frames: int = 5) -
             extract_frames_single_video(
                 video_path, output_folder, video_name, num_frames
             )
-            print(f'Frames have been extracted from "{file_name}".')
+            print(f'    Frames have been extracted from "{file_name}".')
 
     print(
         f"A total of {len(os.listdir(output_folder))} frames have been extracted from {len(os.listdir(input_folder))} videos.\n"
@@ -91,7 +91,7 @@ def extract_faces(input_folder: str, output_folder: str) -> None:
                     face_image = Image.fromarray(face_roi)
                     face_image.save(face_path)
 
-                    print(f'Face {i} has been extracted from "{filename}".')
+                    print(f'    Face {i} has been extracted from "{filename}".')
 
     print(
         f"A total of {len(os.listdir(output_folder))} faces have been extracted from {len(os.listdir(input_folder))} frames.\n"
@@ -132,4 +132,4 @@ def extract_frames_and_faces(
 # Execution
 # ----------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
-    extract_frames_and_faces("dataset/train")
+    extract_frames_and_faces("dataset/train_small")

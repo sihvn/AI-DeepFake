@@ -16,7 +16,7 @@ def train_model(
     num_epochs: int,
     device: torch.device,
 ) -> models.ResNet:
-    print("Training in progress...\n")
+    print("Training in progress...")
 
     model.train()  # Set model to training mode
 
@@ -52,8 +52,8 @@ def train_model(
         epoch_acc = correct_preds.double() / len(dataloader.dataset)
 
         print(
-            f"Epoch {epoch+1}/{num_epochs}, Loss: {epoch_loss:.4f}, Acc: {epoch_acc:.4f}"
+            f"    Epoch {epoch+1}/{num_epochs}, Loss: {epoch_loss:.4f}, Acc: {epoch_acc:.4f}"
         )
 
-    print("\nTraining complete.\n")
+    print("Training complete.\n")
     return model
