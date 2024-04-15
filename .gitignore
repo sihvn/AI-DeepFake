@@ -10,7 +10,6 @@ __pycache__
 
 #training and testing folders
 train
-test
-
-#Weights
+ 
+# weights
 weights
