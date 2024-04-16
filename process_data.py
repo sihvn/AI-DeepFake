@@ -149,6 +149,7 @@ def get_test_data_loader(
 
     print("Dataset information:")
     print("    Total dataset size:", len(dataset))
+    print()
 
     # DataLoaders
     batch_size = 32
