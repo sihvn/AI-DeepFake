@@ -5,6 +5,7 @@ This project aims to detect videos that have been manipulated using methods such
 # Dataset
 
 The project uses dataset from [FaceForensics++](https://github.com/ondyari/FaceForensics).
+
 Download the dataset by filling in this [form](https://docs.google.com/forms/d/e/1FAIpQLSdRRR3L5zAv6tQ_CKxmK4W96tAab_pfBu2EKAgQbeDVhmXagg/viewform) and save it under the folder **dataset**.
 
 # To setup
@@ -79,13 +80,18 @@ valid_test_inputs = ["test", "Test"]
 valid_predict_inputs = ["predict", "Predict"]
 
 ### valid inputs for require_pre_process argument
-valid_is_require_pre_process_inputs = ["","y","Y","yes","Yes","t","T","true","True",
-]
+
+valid_is_require_pre_process_inputs = ["","y","Y","yes","Yes","t","T","true","True",]
+
 valid_not_require_pre_process_inputs = ["n","N","no","No","f","F","false","False",]
 
 # Project Report
 
 [Report]()
+
+# Project Slide
+
+[Slide]()
 
 # GUI
 
