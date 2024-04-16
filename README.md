@@ -70,7 +70,18 @@ Run **main.py** to start the project
 py main.py <train_test_predict> <dataset_root_dir> <require_pre_process> <weights_path>[ <initial_weights_path>][ <seed>]
 
 ```
+### valid inputs for train_test_predict argument
 
+valid_train_inputs = ["", "train", "Train"]
+
+valid_test_inputs = ["test", "Test"]
+
+valid_predict_inputs = ["predict", "Predict"]
+
+### valid inputs for require_pre_process argument
+valid_is_require_pre_process_inputs = ["","y","Y","yes","Yes","t","T","true","True",
+]
+valid_not_require_pre_process_inputs = ["n","N","no","No","f","F","false","False",]
 
 # Project Report
 
