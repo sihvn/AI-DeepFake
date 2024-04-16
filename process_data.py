@@ -146,13 +146,6 @@ def get_test_data_loader(
     dataset_root_dir: str,
     device: torch.device,
 ) -> tuple[DataLoader, DataLoader, DataLoader]:
-    transform = transforms.Compose(
-        [
-            transforms.Resize((224, 224)),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ]
-    )
 
     dataset = DeepfakeDetectionDataset(dataset_root_dir, transform)
 
@@ -175,16 +168,3 @@ def get_test_data_loader(
     print()
 
     return test_loader
-
-
-# Return predict_loader
-def get_predict_data_loader(
-    dataset_root_dir: str,
-    device: torch.device,
-) -> tuple[DataLoader, DataLoader, DataLoader]:
-
-    print("TEST get_predict_data_loader")
-
-    predict_loader = []
-
-    return predict_loader

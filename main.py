@@ -9,6 +9,7 @@ import torch.optim as optim
 from evaluate import *
 from model import *
 from pre_process_data import *
+from predict import *
 from process_data import *
 from train import *
 
@@ -527,8 +528,6 @@ def main(
         )
     elif train_test_predict in valid_test_inputs:
         test_loader = get_test_data_loader(dataset_root_dir, device)
-    elif train_test_predict in valid_predict_inputs:
-        predict_loader = get_predict_data_loader(dataset_root_dir, device)
 
     # ----------------------------------------------------------------------------------------------------
     # Model - initialise the model
@@ -612,7 +611,8 @@ def main(
 
     # if using prediction mode, perform prediction
     elif train_test_predict in valid_predict_inputs:
-        print("Prediction Results:")
+        _, result, _ = predict(dataset_root_dir, model, device)
+        print("Result:", result)
         print()
 
 
