@@ -70,8 +70,8 @@ class GUI:
 
     def load_model(self):
         device = self.get_device()
-        model = get_model("ResNet50", device)
-        model_weights_path = "weights/ResNet50_Adam_LR1e-3_WD1e-5_DP0_EP15.pth"
+        model = get_model("EfficientNetB2", device)
+        model_weights_path = "weights/EfficientNetB2_Adam_LR1e-3_WD1e-6_DP0_EP15.pth"
         model.load_state_dict(torch.load(model_weights_path, map_location=device))
         return model, device
 
