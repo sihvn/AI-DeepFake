@@ -53,12 +53,12 @@ class GUI:
 
     def load_model(self):
         device = self.get_device()
-        model = models.resnet152(pretrained=False)  
+        model = models.resnet50(weights="ResNet50_Weights.IMAGENET1K_V2")  
         num_ftrs = model.fc.in_features
         model.fc = nn.Linear(num_ftrs, 2)  
         
 
-        model.load_state_dict(torch.load('weights/ResNet152_Adam_LR1e-3_WD0_DP0_EP15.pth', map_location=device))
+        model.load_state_dict(torch.load('weights/ResNet50_Adam_LR1e-3_WD1e-5_DP0_EP15.pth', map_location=device))
         model.to(device)
         model.eval()
         return model, device
