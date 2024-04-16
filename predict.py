@@ -1,15 +1,11 @@
 import math
-import os
-import tkinter as tk
-import tkinter.ttk as ttk
-from tkinter import filedialog
 
 import cv2
 import face_recognition
 import numpy as np
 import torch
-import torch.nn as nn
-from PIL import Image, ImageTk
+import torch.nn
+from PIL import Image
 from torchvision import models, transforms
 
 # from process_data import get_predict_inputs
