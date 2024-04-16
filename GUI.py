@@ -100,7 +100,7 @@ class GUI:
 
             model, device = self.load_model()
 
-            preds, result, frames = predict(file_path, model, device)
+            preds, result, _, frames = predict(file_path, model, device)
 
             self.display_frames(frames, preds)
             self.result_label.config(text=f"Result: {result}")

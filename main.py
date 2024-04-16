@@ -611,7 +611,7 @@ def main(
 
     # if using prediction mode, perform prediction
     elif train_test_predict in valid_predict_inputs:
-        _, result, _ = predict(dataset_root_dir, model, device)
+        _, result, _, _ = predict(dataset_root_dir, model, device)
         print("Result:", result)
         print()
 

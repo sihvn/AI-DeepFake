@@ -71,4 +71,7 @@ def predict(
     for face in faces:
         face.thumbnail((200, 200), Image.Resampling.LANCZOS)
 
-    return preds, result, faces
+    for frame in frames:
+        frame.thumbnail((200, 200), Image.Resampling.LANCZOS)
+
+    return preds, result, faces, frames
