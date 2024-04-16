@@ -515,13 +515,13 @@ def main(
     # ----------------------------------------------------------------------------------------------------
     # Process Data - create data loaders from the pre-processed data
     # ----------------------------------------------------------------------------------------------------
-    if train_test_predict == "Train":
+    if train_test_predict in valid_train_inputs:
         train_loader, val_loader, test_loader = get_train_data_loaders(
             dataset_root_dir, device, seed
         )
-    elif train_test_predict == "Test":
+    elif train_test_predict in valid_test_inputs:
         test_loader = get_test_data_loader(dataset_root_dir, device)
-    elif train_test_predict == "Predict":
+    elif train_test_predict in valid_predict_inputs:
         predict_loader = get_predict_data_loader(dataset_root_dir, device)
 
     # ----------------------------------------------------------------------------------------------------
@@ -532,7 +532,16 @@ def main(
     # ----------------------------------------------------------------------------------------------------
     # Train - train the model
     # ----------------------------------------------------------------------------------------------------
-    if train_test_predict == "Train":
+    # if training, train the model
+    if train_test_predict in valid_train_inputs:
+        # if the optional initial_weights_path is provided, load initial weights
+        if (
+            initial_weights_path not in valid_null_initial_weights_path_inputs
+            and os.path.exists(initial_weights_path)
+            and os.path.isfile(initial_weights_path)
+        ):
+            model.load_state_dict(torch.load(initial_weights_path))
+
         criterion = nn.CrossEntropyLoss()
 
         # Vary optimizer function
@@ -564,16 +573,15 @@ def main(
 
         # Save weights
         torch.save(model.state_dict(), weights_path)
+    # else if testing or predicting, load the weights
+    elif train_test_predict in (valid_test_inputs + valid_predict_inputs):
+        model.load_state_dict(torch.load(weights_path))
 
     # ----------------------------------------------------------------------------------------------------
     # Evaluate
     # ----------------------------------------------------------------------------------------------------
-    # Load weights
-    if train_test_predict == "Test" or train_test_predict == "Predict":
-        model.load_state_dict(torch.load(weights_path))
-
-    # Evaluate the model
-    if train_test_predict == "Train":
+    # if using training mode, perform evaluation on validation set and show validation scores
+    if train_test_predict in valid_train_inputs:
         val_accuracy, val_precision, val_recall, val_f1 = evaluate(
             model, val_loader, device
         )
@@ -584,7 +592,8 @@ def main(
         print(f"    F1 Score: {val_f1:.4f}")
         print()
 
-    if train_test_predict == "Train" or train_test_predict == "Test":
+    # if using training mode or testing mode, perform evaluation on test set show test scores
+    if train_test_predict in (valid_train_inputs + valid_test_inputs):
         test_accuracy, test_precision, test_recall, test_f1 = evaluate(
             model, test_loader, device
         )
@@ -595,8 +604,10 @@ def main(
         print(f"    F1 Score: {test_f1:.4f}")
         print()
 
-    elif train_test_predict == "Predict":
+    # if using prediction mode, perform prediction
+    elif train_test_predict in valid_predict_inputs:
         print("Prediction Results:")
+        print()
 
 
 # ----------------------------------------------------------------------------------------------------
