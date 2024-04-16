@@ -7,7 +7,7 @@ from torchvision import transforms
 
 
 # ----------------------------------------------------------------------------------------------------
-# Dataset
+# Classes
 # ----------------------------------------------------------------------------------------------------
 class DeepfakeDetectionDataset(Dataset):
     def __init__(self, root_dir: str, transform: transforms.Compose = None):
@@ -26,6 +26,7 @@ class DeepfakeDetectionDataset(Dataset):
                 if os.path.isfile(os.path.join(dir_path, f))
                 and f.lower().endswith((".jpg", ".jpeg", ".png"))
             ]
+
             labels = [label] * len(files)  # 0 for real, 1 for fake
 
             self.data.extend(zip(files, labels))
@@ -45,6 +46,18 @@ class DeepfakeDetectionDataset(Dataset):
         return image, label
 
 
+# ----------------------------------------------------------------------------------------------------
+# Helper Functions
+# ----------------------------------------------------------------------------------------------------
+transform = transforms.Compose(
+    [
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ]
+)
+
+
 def inspect_dataloader(dataloader: DataLoader, device: torch.device) -> None:
     # Get the first batch
     images, labels = next(iter(dataloader))
@@ -60,19 +73,15 @@ def inspect_dataloader(dataloader: DataLoader, device: torch.device) -> None:
     print(f"    Labels: {labels}")
 
 
+# ----------------------------------------------------------------------------------------------------
+# Main Functions
+# ----------------------------------------------------------------------------------------------------
 # Return train_loader, val_loader, test_loader
 def get_train_data_loaders(
     dataset_root_dir: str,
     device: torch.device,
     seed: int = 33,
 ) -> tuple[DataLoader, DataLoader, DataLoader]:
-    transform = transforms.Compose(
-        [
-            transforms.Resize((224, 224)),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ]
-    )
 
     dataset = DeepfakeDetectionDataset(dataset_root_dir, transform)
 
@@ -137,13 +146,6 @@ def get_test_data_loader(
     dataset_root_dir: str,
     device: torch.device,
 ) -> tuple[DataLoader, DataLoader, DataLoader]:
-    transform = transforms.Compose(
-        [
-            transforms.Resize((224, 224)),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ]
-    )
 
     dataset = DeepfakeDetectionDataset(dataset_root_dir, transform)
 
@@ -166,38 +168,3 @@ def get_test_data_loader(
     print()
 
     return test_loader
-
-
-# Return predict_loader
-def get_predict_data_loader(
-    dataset_root_dir: str,
-    device: torch.device,
-) -> tuple[DataLoader, DataLoader, DataLoader]:
-    transform = transforms.Compose(
-        [
-            transforms.Resize((224, 224)),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ]
-    )
-
-    dataset = DeepfakeDetectionDataset(dataset_root_dir, transform)
-
-    print("Dataset information:")
-    print("    Total dataset size:", len(dataset))
-
-    # DataLoaders
-    batch_size = 32
-
-    predict_loader = DataLoader(
-        dataset,
-        batch_size=batch_size,
-        shuffle=False,
-        pin_memory=torch.cuda.is_available(),
-    )
-
-    print("Inspecting Testing DataLoader:")
-    inspect_dataloader(predict_loader, device)
-    print()
-
-    return predict_loader

@@ -9,6 +9,7 @@ import torch.optim as optim
 from evaluate import *
 from model import *
 from pre_process_data import *
+from predict import *
 from process_data import *
 from train import *
 
@@ -132,14 +133,19 @@ def prompt_train_test_predict(train_test_predict_input="!invalid!") -> str:
     return train_test_predict
 
 
-def prompt_dataset_root_dir(dataset_root_dir="!invalid!") -> str:
+def prompt_dataset_root_dir(train_test_predict, dataset_root_dir="!invalid!") -> str:
     # initial check if dataset_root_dir was provided
     if dataset_root_dir != "!invalid!" and not (os.path.exists(dataset_root_dir)):
         print(
             f"Invalid value provided for 'dataset_root_dir': '{dataset_root_dir}'. Directory not found."
         )
         print("Enter the correct value for the following input prompt...\n")
-    elif dataset_root_dir != "!invalid!" and (os.path.exists(dataset_root_dir)):
+    # if the user is not predicting, check for real and fake subdirectories
+    elif (
+        train_test_predict not in valid_predict_inputs
+        and dataset_root_dir != "!invalid!"
+        and (os.path.exists(dataset_root_dir))
+    ):
         if not (os.path.exists(f"{dataset_root_dir}/real")):
             print(
                 f"Invalid dataset root directory path. Subdirectory '{dataset_root_dir}/real' not found."
@@ -164,7 +170,9 @@ def prompt_dataset_root_dir(dataset_root_dir="!invalid!") -> str:
             print(
                 f"Invalid dataset root directory path. Directory '{dataset_root_dir}' not found."
             )
-        else:
+
+        # if the user is not predicting, check for real and fake subdirectories
+        elif train_test_predict not in valid_predict_inputs:
             if not (os.path.exists(f"{dataset_root_dir}/real")):
                 print(
                     f"Invalid dataset root directory path. Subdirectory '{dataset_root_dir}/real' not found."
@@ -177,7 +185,6 @@ def prompt_dataset_root_dir(dataset_root_dir="!invalid!") -> str:
                 (os.path.exists(f"{dataset_root_dir}/fake"))
             ):
                 dataset_root_dir = "!invalid!"
-                print()
 
         print()
 
@@ -521,8 +528,6 @@ def main(
         )
     elif train_test_predict in valid_test_inputs:
         test_loader = get_test_data_loader(dataset_root_dir, device)
-    elif train_test_predict in valid_predict_inputs:
-        predict_loader = get_predict_data_loader(dataset_root_dir, device)
 
     # ----------------------------------------------------------------------------------------------------
     # Model - initialise the model
@@ -606,7 +611,8 @@ def main(
 
     # if using prediction mode, perform prediction
     elif train_test_predict in valid_predict_inputs:
-        print("Prediction Results:")
+        _, result, _ = predict(dataset_root_dir, model, device)
+        print("Result:", result)
         print()
 
 
@@ -654,11 +660,11 @@ if __name__ == "__main__":
 
     # If user did not provide "dataset_root_dir" argument, ask for "dataset_root_dir"
     if len(sys.argv) <= 3:
-        dataset_root_dir = prompt_dataset_root_dir()
+        dataset_root_dir = prompt_dataset_root_dir(train_test_predict)
 
     # If user provided "dataset_root_dir" argument, assign the value to "dataset_root_dir"
     if len(sys.argv) >= 4:
-        dataset_root_dir = prompt_dataset_root_dir(sys.argv[3])
+        dataset_root_dir = prompt_dataset_root_dir(train_test_predict, sys.argv[3])
 
     # If the did not provide "require_pre_process" argument, ask for "require_pre_process"
     if len(sys.argv) <= 4:
@@ -708,7 +714,8 @@ if __name__ == "__main__":
 
     # If the user did not provide all of the mandatory arguments, ask for optional "seed"
     if len(sys.argv) < 6:
-        seed = prompt_seed()
+        if train_test_predict == "Train":
+            seed = prompt_seed()
 
     # If user provided "seed" argument, assign the value to "seed"
     if len(sys.argv) == 8:
