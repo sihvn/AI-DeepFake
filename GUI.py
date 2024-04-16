@@ -3,9 +3,7 @@ import tkinter.ttk as ttk
 from tkinter import filedialog
 
 import torch
-import torch.nn as nn
 from PIL import ImageTk
-from torchvision import models
 
 from model import *
 from predict import *
@@ -74,9 +72,7 @@ class GUI:
         device = self.get_device()
         model = get_model("ResNet50", device)
         model_weights_path = "weights/ResNet50_Adam_LR1e-3_WD1e-5_DP0_EP15.pth"
-        model.load_state_dict(
-            torch.load(model_weights_path, map_location=device)
-        )
+        model.load_state_dict(torch.load(model_weights_path, map_location=device))
         return model, device
 
     def display_frames(self, frames, preds):
