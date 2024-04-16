@@ -87,11 +87,11 @@ valid_not_require_pre_process_inputs = ["n","N","no","No","f","F","false","False
 
 # Project Report
 
-[Report]()
+[Report](https://github.com/sihvn/AI-DeepFake/blob/main/Project%20Report.pdf)
 
 # Project Slide
 
-[Slide]()
+[Slide](https://github.com/sihvn/AI-DeepFake/blob/main/Project%20Slide.pdf)
 
 # GUI
 
