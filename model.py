@@ -2,6 +2,9 @@ import torch
 import torch.nn as nn
 from torchvision import models
 
+# ----------------------------------------------------------------------------------------------------
+# Constants
+# ----------------------------------------------------------------------------------------------------
 ResNet_models = ["ResNet18", "ResNet34", "ResNet50", "ResNet101", "ResNet152"]
 EfficientNet_models = [
     "EfficientNetB0",
@@ -14,6 +17,9 @@ EfficientNet_models = [
 ]
 
 
+# ----------------------------------------------------------------------------------------------------
+# Main Function
+# ----------------------------------------------------------------------------------------------------
 def get_model(
     model_name: str, device: torch.device
 ) -> models.ResNet | models.EfficientNet:
