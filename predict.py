@@ -1,9 +1,12 @@
 import math
+import os
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import filedialog
 
 import cv2
+import face_recognition
+import numpy as np
 import torch
 import torch.nn as nn
 from PIL import Image, ImageTk
@@ -33,10 +36,25 @@ def predict(
         ret, frame = cap.read()
         if ret:
             frame = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-            frame.thumbnail((200, 200), Image.Resampling.LANCZOS)
             frames.append(frame)
 
     cap.release()
+
+    faces = []
+
+    for frame in frames:
+        image = np.array(frame)  # convert to numpy array
+
+        # Find all face locations in the image
+        face_locations = face_recognition.face_locations(image)
+
+        # Extract and save faces
+        for i, (top, right, bottom, left) in enumerate(face_locations):
+            # Only extract faces greater than 75x75 pixels --> helps to ignore wrong faces from background objects
+            if (bottom - top > 75) and (right - left > 75):
+                face_roi = image[top:bottom, left:right]
+                face_image = Image.fromarray(face_roi)
+                faces.append(face_image)
 
     transform = transforms.Compose(
         [
@@ -48,10 +66,13 @@ def predict(
 
     model.eval()
 
-    inputs = torch.stack([transform(frame) for frame in frames])
+    inputs = torch.stack([transform(face) for face in faces])
     inputs = inputs.to(device)
     outputs = model(inputs)
     _, preds = torch.max(outputs, 1)
     result = "Fake" if torch.mean(preds.float()) > 0.4 else "Real"
 
-    return preds, result, frames
+    for face in faces:
+        face.thumbnail((200, 200), Image.Resampling.LANCZOS)
+
+    return preds, result, faces
